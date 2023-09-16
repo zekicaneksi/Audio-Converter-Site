@@ -53,14 +53,16 @@ export default () => {
     useEffect(() => {
         if (file === undefined || file.size > maxFileSize) return
 
+        const formData = new FormData();
+
+
+        formData.append("audioFile", file);
+
+
         // Upload the file
-        fetch('http://backend.com/uploadfile', {
+        fetch('/api/upload', {
             method: 'POST',
-            body: file,
-            headers: {
-                'content-type': file.type,
-                'content-length': `${file.size}`,
-            },
+            body: formData,
         })
     }, [file])
 
