@@ -4,6 +4,8 @@ Next.js (React) along with MUI is used for the frontend.
 
 ## Development
 
+To install the dependencies: `npm install`
+
 Run the development server;
 
 ```bash

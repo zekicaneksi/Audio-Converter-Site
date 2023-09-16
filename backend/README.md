@@ -4,7 +4,9 @@ Golang is used for backend.
 
 ## Development
 
-- run `go run .`
+- To install dependencies: `go get .`
+
+- To start the backend `go run .`
 
 ## Testing
 
