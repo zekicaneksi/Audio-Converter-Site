@@ -1,11 +1,13 @@
 # frontend
 
-## Getting Started
+Next.js (React) along with MUI is used for the frontend.
 
-First, run the development server:
+## Development
+
+Run the development server;
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the homepage.

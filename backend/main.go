@@ -13,8 +13,10 @@ type test struct {
 	Abc string
 }
 
-func main() {
-	http.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
+func setupServer() *http.ServeMux {
+	server := http.NewServeMux()
+
+	server.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
 
 		if r.Method != "POST" {
 			http.Error(w, "404 not found.", http.StatusNotFound)
@@ -28,16 +30,17 @@ func main() {
 			fmt.Println(err)
 			return
 		}
-
 		defer file.Close()
-		fmt.Printf("Uploaded File: %+v\n", handler.Filename)
-		fmt.Printf("File Size: %+v\n", handler.Size)
-		fmt.Printf("MIME Header: %+v\n", handler.Header)
+
+		if handler.Size > 30000000 {
+			http.Error(w, "400 file size too big.", http.StatusBadRequest)
+			return
+		}
 
 		// Save the file locally
 
 		// Create file
-		dst, err := os.Create(handler.Filename)
+		dst, err := os.Create("uploaded_files/" + handler.Filename)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			defer dst.Close()
@@ -51,7 +54,6 @@ func main() {
 		}
 
 		// response
-
 		w.Header().Set("Content-Type", "application/json")
 
 		abc := test{
@@ -61,5 +63,12 @@ func main() {
 		json.NewEncoder(w).Encode(abc)
 	})
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	return server
+}
+
+func main() {
+
+	server := setupServer()
+
+	log.Fatal(http.ListenAndServe(":8080", server))
 }
