@@ -2,18 +2,21 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 )
 
-type test struct {
-	Abc string
+type uploadResponse struct {
+	Response string
 }
 
 func setupServer() *http.ServeMux {
+
 	server := http.NewServeMux()
 
 	server.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
@@ -53,17 +56,43 @@ func setupServer() *http.ServeMux {
 			return
 		}
 
+		// Run ffprobe on the file
+		ffprobe_res, err := runffprobe(&handler.Filename)
+
+		// Delete the file
+		if err_delete := os.Remove("uploaded_files/" + handler.Filename); err_delete != nil {
+			log.Println("could not remove the file")
+		}
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotAcceptable)
+			return
+		}
+
 		// response
 		w.Header().Set("Content-Type", "application/json")
 
-		abc := test{
-			Abc: "123",
+		res := uploadResponse{
+			Response: *ffprobe_res,
 		}
 
-		json.NewEncoder(w).Encode(abc)
+		json.NewEncoder(w).Encode(res)
 	})
 
 	return server
+}
+
+func runffprobe(filename *string) (*string, error) {
+
+	out, err := exec.Command("ffprobe", "-v", "quiet", "-print_format", "json", "-show_format", "uploaded_files/"+*filename).Output()
+	if err != nil {
+		return nil, errors.New("ffprobe could not inspect or find the file, please provide a valid file")
+	}
+
+	result := string(out)
+
+	return &result, nil
+
 }
 
 func main() {
