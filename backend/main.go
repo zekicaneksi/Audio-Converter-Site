@@ -89,7 +89,14 @@ func runffprobe(filename *string) (*string, error) {
 		return nil, errors.New("ffprobe could not inspect or find the file, please provide a valid file")
 	}
 
-	result := string(out)
+	var jsonMap map[string]interface{}
+	json.Unmarshal([]byte(out), &jsonMap)
+
+	b, err := json.Marshal(jsonMap["format"])
+	if err != nil {
+		return nil, errors.New("error decoding ffprobe output")
+	}
+	result := string(b)
 
 	return &result, nil
 

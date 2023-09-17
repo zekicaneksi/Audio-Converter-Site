@@ -51,20 +51,29 @@ export default () => {
     };
 
     useEffect(() => {
+        uploadFile()
+    }, [file])
+
+    async function uploadFile() {
         if (file === undefined || file.size > maxFileSize) return
-
         const formData = new FormData();
-
 
         formData.append("audioFile", file);
 
+        try {
+            // Upload the file
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            })
 
-        // Upload the file
-        fetch('/api/upload', {
-            method: 'POST',
-            body: formData,
-        })
-    }, [file])
+            const data = await res.json()
+            console.log(JSON.parse(data.Response))
+
+        } catch (err) {
+            window.alert("There is a problem with the server. Please try again later.");
+        }
+    }
 
     return (
         <>
