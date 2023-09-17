@@ -1,10 +1,31 @@
 'use client'
 
 // MUI Imports
-import { Container, Box, Typography, Paper, Button, styled, useTheme, useMediaQuery, CircularProgress } from '@mui/material';
+import { Container, Box, Typography, Paper, Button, styled, useTheme, useMediaQuery, CircularProgress, Dialog, DialogTitle } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { ChangeEvent, useEffect, useState, DragEvent } from 'react';
+
+export interface FfprobeDialoProps {
+    open: boolean;
+    onClose: () => void;
+    ffprobeJson: any // It's a json
+}
+
+function FfprobeDialog(props: FfprobeDialoProps) {
+    const { onClose, open, ffprobeJson } = props;
+
+    const handleClose = () => {
+        onClose();
+    };
+
+    return (
+        <Dialog onClose={handleClose} open={open}>
+            <DialogTitle>ffprobe results</DialogTitle>
+            <div><pre>{JSON.stringify(ffprobeJson, null, 2)}</pre></div>
+        </Dialog>
+    );
+}
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -34,6 +55,11 @@ export default () => {
     const [file, setFile] = useState<File>()
     const [isDrag, setDrag] = useState<boolean>(false)
 
+    const [errMessage, setErrMessage] = useState<string>("")
+
+    const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+    const [dialogJson, setDialogJson] = useState<any>({});
+
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setFile(e.target.files[0]);
@@ -51,6 +77,8 @@ export default () => {
     };
 
     useEffect(() => {
+        if (file === undefined) return
+        if (file.size > maxFileSize) { setErrMessage("File size is too big"); return; }
         uploadFile()
     }, [file])
 
@@ -67,16 +95,28 @@ export default () => {
                 body: formData,
             })
 
+            if (res.status === 406) {
+                setErrMessage('ffprobe could not inspect the file');
+                return;
+            }
+
             const data = await res.json()
-            console.log(JSON.parse(data.Response))
+            setDialogJson(JSON.parse(data.Response))
+            setDialogOpen(true);
+
 
         } catch (err) {
-            window.alert("There is a problem with the server. Please try again later.");
+            setErrMessage("There is a problem with the server. Please try again later.");
         }
     }
 
     return (
         <>
+            <FfprobeDialog
+                open={dialogOpen}
+                onClose={() => { setDialogOpen(false); setFile(undefined); setDialogJson({}) }}
+                ffprobeJson={dialogJson}
+            />
             <Box sx={{ zIndex: (isDrag ? 10 : 0), position: 'absolute', width: '100%', height: '100%', backgroundColor: (isDrag ? 'rgba(0,0,0,0.5);' : '') }} onDragEnter={() => { setDrag(true) }} onDragLeave={() => { setDrag(false) }} onDrop={handleDrop} onDragOver={(e) => { e.preventDefault() }} />
             <Container maxWidth="md" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
                 <Paper elevation={2} sx={{ padding: (smQuery ? 8 : 3), backgroundColor: '#C3A67B' }}>
@@ -87,24 +127,23 @@ export default () => {
                         <Grid xs={12} sx={gridItemCenterCss}>
                             <Button component="label" variant="contained" startIcon={<UploadFileIcon />} size={(smQuery ? 'large' : 'small')}>
                                 Upload Audio
-                                <VisuallyHiddenInput type="file" onChange={handleFileChange} disabled={(file === undefined || file.size > maxFileSize) ? false : true} />
+                                <VisuallyHiddenInput type="file" onChange={handleFileChange} disabled={(file === undefined || file.size > maxFileSize || errMessage !== "") ? false : true} />
                             </Button>
                         </Grid>
-                        {file ?
+                        {file &&
                             <Grid xs={12} sx={{ ...gridItemCenterCss }}>
                                 <Grid container spacing={5} sx={{ ...gridItemCenterCss, flexDirection: 'column' }}>
                                     <Grid xs={12}>
                                         <Typography>{file.name}</Typography>
                                     </Grid>
-                                    {file.size > maxFileSize ?
+                                    {(errMessage !== "") ?
                                         <Grid xs={12}>
-                                            <Typography sx={{ typography: { xs: 'h6', sm: 'h5', md: 'h4' } }} color={theme.palette.error.main}>File size is too big</Typography>
+                                            <Typography sx={{ typography: { xs: 'h6', sm: 'h5', md: 'h4' } }} color={theme.palette.error.main} textAlign={'center'}>{errMessage}</Typography>
                                         </Grid>
                                         : <CircularProgress />
                                     }
                                 </Grid>
                             </Grid>
-                            : <></>
                         }
                         <Grid xs={12} sx={gridItemCenterCss}>
                             <Typography sx={{ typography: { xs: 'body1', sm: 'h6', md: 'h5' } }}>Max File Size: 30 MB</Typography>
