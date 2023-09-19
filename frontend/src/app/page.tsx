@@ -1,7 +1,7 @@
 'use client'
 
 // MUI Imports
-import { Container, Box, Typography, Paper, Button, styled, useTheme, useMediaQuery, CircularProgress, Dialog, DialogTitle } from '@mui/material';
+import { Container, Box, Typography, Paper, Button, styled, useTheme, useMediaQuery, CircularProgress, Dialog, DialogTitle, DialogContent } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { ChangeEvent, useEffect, useState, DragEvent } from 'react';
@@ -20,9 +20,11 @@ function FfprobeDialog(props: FfprobeDialoProps) {
     };
 
     return (
-        <Dialog onClose={handleClose} open={open}>
+        <Dialog onClose={handleClose} open={open} PaperProps={{sx: {backgroundColor: '#C3A67B'}}}>
             <DialogTitle>ffprobe results</DialogTitle>
-            <div><pre>{JSON.stringify(ffprobeJson, null, 2)}</pre></div>
+            <DialogContent>
+                <pre>{JSON.stringify(ffprobeJson, null, 2)}</pre>
+            </DialogContent>
         </Dialog>
     );
 }
@@ -122,7 +124,7 @@ export default () => {
                 <Paper elevation={2} sx={{ padding: (smQuery ? 8 : 3), backgroundColor: '#C3A67B' }}>
                     <Grid container spacing={5}>
                         <Grid xs={12} sx={gridItemCenterCss}>
-                            <Typography sx={{ typography: { xs: 'body1', sm: 'h6', md: 'h5' } }}>Upload the file that you wish to convert or see details of</Typography>
+                            <Typography sx={{ typography: { xs: 'body1', sm: 'h6', md: 'h5' } }}>Upload the file that you wish to see details of</Typography>
                         </Grid>
                         <Grid xs={12} sx={gridItemCenterCss}>
                             <Button component="label" variant="contained" startIcon={<UploadFileIcon />} size={(smQuery ? 'large' : 'small')}>
