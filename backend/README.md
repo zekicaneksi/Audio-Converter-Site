@@ -2,7 +2,7 @@
 
 Golang is used for backend.
 
-## Development
+## Development / Deployment
 
 - To install dependencies: `go get .`
 
@@ -11,7 +11,3 @@ Golang is used for backend.
 ## Testing
 
 - run ` go test .`
-
-## Deployment
-
-idk

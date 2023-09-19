@@ -13,3 +13,9 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to see the homepage.
+
+## Deployment
+
+- Run `npm run build` to generate optimized static files.
+
+- Run `npm run start` to serve the generated files.
