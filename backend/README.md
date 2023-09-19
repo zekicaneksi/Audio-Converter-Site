@@ -8,6 +8,8 @@ Golang is used for backend.
 
 - To start the backend `go run .`
 
+A dockerfile is also provided.
+
 ## Testing
 
 - run ` go test .`
