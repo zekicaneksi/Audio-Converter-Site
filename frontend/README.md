@@ -19,3 +19,5 @@ Open [http://localhost:3000](http://localhost:3000) to see the homepage.
 - Run `npm run build` to generate optimized static files.
 
 - Run `npm run start` to serve the generated files.
+
+A dockerfile is also provided for deployment.
