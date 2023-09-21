@@ -16,8 +16,4 @@ Open [http://localhost:3000](http://localhost:3000) to see the homepage.
 
 ## Deployment
 
-- Run `npm run build` to generate optimized static files.
-
-- Run `npm run start` to serve the generated files.
-
-A dockerfile is also provided for deployment.
+Next.js is configured to produce static output (config source)[https://nextjs.org/docs/pages/building-your-application/deploying/static-exports]. Running `npm run build` produces the output into the `out` folder.
