@@ -16,4 +16,4 @@ Open [http://localhost:3000](http://localhost:3000) to see the homepage.
 
 ## Deployment
 
-Next.js is configured to produce static output (config source)[https://nextjs.org/docs/pages/building-your-application/deploying/static-exports]. Running `npm run build` produces the output into the `out` folder.
+Next.js is configured to produce static output [(config source)](https://nextjs.org/docs/pages/building-your-application/deploying/static-exports). Running `npm run build` produces the output into the `out` folder.
