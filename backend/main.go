@@ -18,6 +18,12 @@ type uploadResponse struct {
 func setupServer() *http.ServeMux {
 
 	server := http.NewServeMux()
+	
+	server.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/text")
+		w.Write([]byte("hello"))
+	})
 
 	server.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
 
